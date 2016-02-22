@@ -23,6 +23,9 @@ type Packet struct {
 }
 
 func NewPacket(data []byte) (*Packet, error) {
+	if len(data) != PacketSize {
+		return nil, fmt.Errorf("Invalid TS packet, size must be %d bytes", PacketSize)
+	}
 	if data[0] != SyncByte {
 		return nil, fmt.Errorf("Invalid TS packet, must start with sync byte, got %x expect %x", data[0], SyncByte)
 	}

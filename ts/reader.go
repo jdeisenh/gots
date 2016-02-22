@@ -101,7 +101,7 @@ func (r *Reader) readUntilPacket() error {
 		if b == 0 {
 			return fmt.Errorf("Failed to read full packet got %d out of %d bytes", len(r.remainder), PacketSize)
 		}
-		r.remainder = append(r.remainder, buffer...)
+		r.remainder = append(r.remainder, buffer[:b]...)
 	}
 	return nil
 }

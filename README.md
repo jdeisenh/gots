@@ -46,7 +46,7 @@ func main() {
     
 Example usage from `parser.go` :
 
-    ./parser testfiles/bbb.ts | less
+    ./parser "https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/gear1/fileSequence179.ts" | less
     
     
 ``` 

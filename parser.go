@@ -4,14 +4,18 @@ import (
 	"fmt"
 	"github.com/damienlevin/gots/pes"
 	"github.com/damienlevin/gots/ts"
+	"net/http"
 	"os"
 )
 
 var TSIndex = 1
 
 func main() {
-	f, _ := os.Open(os.Args[1])
-	t := ts.NewReader(f, displayTSPacket, displayPAT, displayPMT)
+	rsp, err := http.Get(os.Args[1])
+	if err != nil {
+		panic(err)
+	}
+	t := ts.NewReader(rsp.Body, displayTSPacket, displayPAT, displayPMT)
 	p := pes.NewReader(t, displayPES)
 
 	for {
