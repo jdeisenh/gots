@@ -22,7 +22,7 @@ type Packet struct {
 	Payload                    []byte
 }
 
-func NewPacket(data []byte) (*Packet, error) {
+func newPacket(data []byte) (*Packet, error) {
 	if len(data) != PacketSize {
 		return nil, fmt.Errorf("Invalid TS packet, size must be %d bytes", PacketSize)
 	}
@@ -54,11 +54,12 @@ func NewPacket(data []byte) (*Packet, error) {
 }
 
 func (p Packet) hasProgramMapTable(pat *ProgramAssociationTable) bool {
-	if pat != nil {
-		for _, r := range pat.Programs {
-			if r.ProgramMapPID == p.PID {
-				return true
-			}
+	if pat == nil {
+		return false
+	}
+	for _, r := range pat.Programs {
+		if r.ProgramMapPID == p.PID {
+			return true
 		}
 	}
 	return false

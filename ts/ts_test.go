@@ -69,7 +69,7 @@ func TestNewPacket(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		got, err := NewPacket(tt.data)
+		got, err := newPacket(tt.data)
 		if (err != nil) != tt.wantErr {
 			t.Errorf("%q. NewPacket() error = %v, wantErr %v", tt.name, err, tt.wantErr)
 			continue

@@ -1,6 +1,9 @@
 package pes
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func StreamId(value uint8) string {
 	switch {
@@ -53,12 +56,25 @@ func StreamId(value uint8) string {
 
 }
 
+func toTime(h uint64) string {
+	t := time.Duration((h / 90)) * time.Millisecond
+	return fmt.Sprintf("%s", t)
+}
+
 func (p Packet) String() string {
 	return fmt.Sprintf("\tCode Prefix: %x\n"+
 		"\tStream ID: %x [%s]\n"+
 		"\tPacket Length: %d\n"+
-		"\tMarkerBits: %x\n"+
-		"\tScramblingControl: %x\n"+
+		"%s",
+		p.CodePrefix,
+		p.StreamID,
+		StreamId(p.StreamID),
+		p.PacketLength,
+		p.Header)
+}
+
+func (h Header) String() string {
+	return fmt.Sprintf("\tScramblingControl: %x\n"+
 		"\tPriority: %t\n"+
 		"\tDataAlignmentIndicator: %t\n"+
 		"\tCopyright: %t\n"+
@@ -72,27 +88,24 @@ func (p Packet) String() string {
 		"\tContains CRC: %t\n"+
 		"\tContains Extension: %t\n"+
 		"\tHeaderLength: %d\n"+
-		"\tPTS: %d\n"+
-		"\tDTS: %d",
-		p.CodePrefix,
-		p.StreamID,
-		StreamId(p.StreamID),
-		p.PacketLength,
-		p.MarkerBits,
-		p.ScramblingControl,
-		p.Priority,
-		p.DataAlignmentIndicator,
-		p.Copyright,
-		p.Original,
-		p.ContainsPTS,
-		p.ContainsDTS,
-		p.ContainsESCR,
-		p.ContainsESRate,
-		p.ContainsDSMTrickMode,
-		p.ContainsAdditionalCopyInfo,
-		p.ContainsCRC,
-		p.ContainsExtension,
-		p.HeaderLength,
-		p.PTS,
-		p.DTS)
+		"\tPTS: %d [%s]\n"+
+		"\tDTS: %d [%s]",
+		h.ScramblingControl,
+		h.Priority,
+		h.DataAlignmentIndicator,
+		h.Copyright,
+		h.Original,
+		h.ContainsPTS,
+		h.ContainsDTS,
+		h.ContainsESCR,
+		h.ContainsESRate,
+		h.ContainsDSMTrickMode,
+		h.ContainsAdditionalCopyInfo,
+		h.ContainsCRC,
+		h.ContainsExtension,
+		h.HeaderLength,
+		h.PTS,
+		toTime(h.PTS),
+		h.DTS,
+		toTime(h.DTS))
 }

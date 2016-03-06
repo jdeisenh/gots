@@ -1,4 +1,4 @@
-GoTS [![Build Status](https://travis-ci.org/damienlevin/gots.svg?branch=master)](https://travis-ci.org/damienlevin/gots)
+GoTS ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg) [![Build Status](https://travis-ci.org/damienlevin/gots.svg?branch=master)](https://travis-ci.org/damienlevin/gots) [![codebeat badge](https://codebeat.co/badges/c63c07d0-e4ff-45b9-9283-9861f6d9c720)](https://codebeat.co/projects/github-com-damienlevin-gots)
 ======
 [MPEG](https://en.wikipedia.org/wiki/MPEG_transport_stream) transport stream parser written in [Go](golang.org).
 
@@ -17,8 +17,7 @@ GoTS [![Build Status](https://travis-ci.org/damienlevin/gots.svg?branch=master)]
 
 
 ## Installation
-    cd $GOPATH
-    go get -u github.com/dml/gots
+    go get -u github.com/damienlevin/gots
 
 ## Usage
 
@@ -46,63 +45,73 @@ func main() {
     
 Example usage from `parser.go` :
 
-    ./parser "https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/gear1/fileSequence179.ts" | less
+    ./parser  -u "https://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/gear1/fileSequence179.ts" | less
     
     
 ``` 
 ...
 ============================================================
-TS packet [87]
+TS packet [4]
 ============================================================
 SyncByte: 47
 Transport Error Indicator: false
 Payload Unit Start Indicator: true
 Transport Priority: false
-PID: 4096
+PID: 257
 Transport Scrambling Control: 0
-Contains Adaptation Field: false
+Contains Adaptation Field: true
 Contains Payload: true
-Continuity Counter: 2
+Continuity Counter: 7
+        AdaptationField:
+        Adaptation Field Length: 7
+        Discontinuity Indicator: false
+        RandomAccess Indicator: false
+        Elementary StreamPriority Indicator: false
+        Contains PCR: true
+        Contains OPCR: false
+        Contains Splicing Point: false
+        Contains Transport Private Data: false
+        Contains Adaptation Field Extension: false
+        PCR: 04d113fa7eed
+        OPCR: 
+        Splice Countdown: 0
+        Transport Private Data Lenght: 0
 ------------------------------------------------------------
-Payload (184) 
+Payload (176) 
 ------------------------------------------------------------
-00 02 b0 17 00 01 c1 00 00 e1 00 f0 00 1b e1 00 
-f0 00 03 e1 01 f0 00 4e 59 3d 1e ff ff ff ff ff 
-ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
-ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
-ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
-ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
-ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
-ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
-ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
-ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
-ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 
-ff ff ff ff ff ff ff ff 
+00 00 01 e0 00 00 84 c0 0a 31 26 89 75 61 11 26 
+89 5d f1 00 00 00 01 09 f0 00 00 01 06 05 11 03 
+87 f4 4e cd 0a 4b dc a1 94 3a c3 d4 9b 17 1f 00 
+80 00 00 01 21 e1 09 08 37 ff ff ff ff ff ff ff 
+ff ff d4 bf e2 bf fa ff ff ef ff d7 da 31 10 b1 
+50 26 fd 64 60 e0 74 d2 e5 21 ad 31 57 89 4f 0e 
+a8 37 b3 4c 53 5c bc a5 eb 8d bb ff cd fe 30 0f 
+85 60 21 07 49 8d a9 27 87 e1 37 a4 99 fb e6 ff 
+4d 71 58 57 e1 dc d1 83 fa 9a 61 9b ea bf ff ff 
+ff ff fc 9e 6f ff cc 01 d8 89 8a 72 1d 8a 06 6a 
+7f f5 a3 31 84 40 6c bc c4 c0 47 d7 20 41 80 89 
 ------------------------------------------------------------
-PMT 
+PES packet [2]
 ------------------------------------------------------------
-        Table Id: 2
-        Section Syntax Indicator: true
-        Section Lenght: 23
-        Program Number: 1
-        Version Number: 0
-        Current Next Indicator: true
-        Section Number: 0
-        Last Section Number: 0
-        PCR PID: 256
-        Program Info Length: 0
-        Stream Descriptors: []
-                Streams:
-                Stream Type: 1b [AVC video stream as defined in ITU-T Rec. H.264 | ISO/IEC 14496-10 Video]
-                Elementaty PID: 256
-                ES Info Length: 0
-                Data: 03e101f000
-                Stream Type: 3 [ISO/IEC 11172-3 Audio]
-                Elementaty PID: 257
-                ES Info Length: 0
-                Data: 
-        CRC32: 4e593d1e
-
+        Code Prefix: 1
+        Stream ID: e0 [ITU-T Rec. H.262 | ISO/IEC 13818-2, ISO/IEC 11172-2, ISO/IEC 14496-2 or ITU-T Rec. H.264 | ISO/IEC 14496-10 video stream number xxxx]
+        Packet Length: 0
+        ScramblingControl: 0
+        Priority: false
+        DataAlignmentIndicator: true
+        Copyright: false
+        Original: false
+        Contains PTS: true
+        Contains DTS: true
+        Contains ESCR: false
+        Contains ESRate: false
+        Contains DSMTrickMode: false
+        Contains AdditionalCopyInfo: false
+        Contains CRC: false
+        Contains Extension: false
+        HeaderLength: 10
+        PTS: 161626800 [29m55.853s]
+        DTS: 161623800 [29m55.82s]
 ...
 ```
 ## License

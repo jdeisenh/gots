@@ -3,8 +3,7 @@ package pes
 import "github.com/damienlevin/gots/ts"
 
 type Reader struct {
-	reader    *ts.Reader
-	remainder []byte
+	reader *ts.Reader
 
 	Packet      *Packet
 	OnNewPacket func(*Packet)
@@ -18,22 +17,23 @@ func NewReader(r *ts.Reader, c func(*Packet)) *Reader {
 
 func (r *Reader) Next() (*Packet, error) {
 	var p *Packet
-	ac := -6
-	for p == nil || ac < int(p.PacketLength) {
-		ts, err := r.reader.Next()
-		if err != nil {
+	var err error
+	for p == nil {
+		if _, err := r.reader.Next(); err != nil {
 			return nil, err
 		}
-		if pmt := r.reader.PMT; pmt != nil && pmt.HasElementaryStream(ts.PID) {
-			if ts.PayloadUnitStartIndicator {
-				p, err = NewPacket(ts.Payload)
+		t := r.reader.Packet
+		pmt := r.reader.PMT
+		if t != nil && pmt != nil && pmt.HasElementaryStream(t.PID) {
+			if t.PayloadUnitStartIndicator {
+				p, err = newPacket(t.Payload)
 				if err != nil {
 					return nil, err
 				}
+				r.OnNewPacket(p)
+				return p, nil
 			}
-			ac = ac + len(ts.Payload)
 		}
 	}
-	r.OnNewPacket(p)
-	return p, nil
+	return nil, nil
 }

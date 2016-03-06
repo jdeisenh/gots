@@ -1,18 +1,18 @@
 package ts
 
 import (
-	"fmt"
 	"io"
+	"math"
 )
 
 type Reader struct {
-	reader    io.Reader
-	remainder []byte
-	off       int
+	reader io.Reader
+	offset int
 
-	Packet      *Packet
-	PAT         *ProgramAssociationTable
-	PMT         *ProgramMapTable
+	Packet *Packet
+	PAT    *ProgramAssociationTable
+	PMT    *ProgramMapTable
+
 	OnNewPacket func(*Packet)
 	OnNewPAT    func(*ProgramAssociationTable)
 	OnNewPMT    func(*ProgramMapTable)
@@ -26,82 +26,52 @@ func NewReader(r io.Reader, c func(*Packet), a func(*ProgramAssociationTable), m
 		OnNewPMT:    m}
 }
 
-func (r *Reader) Read(p []byte) (n int, err error) {
-	var ac, rd int
-	for ac < cap(p) {
-		if r.Packet == nil || r.off == len(r.Packet.Payload) {
-			_, err := r.Next()
-			r.off = 0
-			if err != nil {
-				return 0, err
-			}
-		}
-		if ac+r.off < len(r.Packet.Payload) {
-			rd = copy(p[ac:cap(p)], r.Packet.Payload[r.off:])
-		} else {
-			rd = copy(p[ac:len(r.Packet.Payload)-ac], r.Packet.Payload[r.off:])
-		}
-		r.off = r.off + rd
-	}
-	return ac, nil
-}
-
 func (r *Reader) Next() (*Packet, error) {
-	if err := r.syncToPacket(); err != nil {
+	data, err := r.readBytes(PacketSize)
+	if err != nil {
 		return nil, err
 	}
-	if err := r.readUntilPacket(); err != nil {
+	r.Packet, err = newPacket(data)
+	if err != nil {
 		return nil, err
 	}
-
-	var err error
-	r.Packet, err = NewPacket(r.remainder[:PacketSize])
-	if err == nil {
-		r.OnNewPacket(r.Packet)
-		if r.Packet.hasProgramAssociationTable() {
-			r.PAT = newPogramAssociationTable(r.Packet.Payload)
-			r.OnNewPAT(r.PAT)
-		}
-		if r.Packet.hasProgramMapTable(r.PAT) {
-			r.PMT = newProgramMapTable(r.Packet.Payload)
-			r.OnNewPMT(r.PMT)
-		}
+	r.OnNewPacket(r.Packet)
+	if r.Packet.hasProgramAssociationTable() {
+		r.PAT = newPogramAssociationTable(r.Packet.Payload)
+		r.OnNewPAT(r.PAT)
 	}
-	r.remainder = r.remainder[PacketSize:]
-	return r.Packet, err
+	if r.Packet.hasProgramMapTable(r.PAT) {
+		r.PMT = newProgramMapTable(r.Packet.Payload)
+		r.OnNewPMT(r.PMT)
+	}
+	return r.Packet, nil
 }
 
-func (r *Reader) syncToPacket() error {
-	if len(r.remainder) == 0 || r.remainder[0] != SyncByte {
-		buffer := make([]byte, 1)
-		for {
-			b, err := r.reader.Read(buffer)
-			if err != nil {
-				return err
+func (r *Reader) Read(b []byte) (int, error) {
+	read := 0
+	for read < cap(b) {
+		if r.Packet == nil || r.offset == len(r.Packet.Payload) {
+			if _, err := r.Next(); err != nil {
+				return read, err
 			}
-			if b == 0 {
-				return fmt.Errorf("Failed to find sync byte")
-			}
-			if buffer[0] == SyncByte {
-				r.remainder = buffer
-				return nil
-			}
+			r.offset = 0
 		}
+		rd := copy(b[read:], r.Packet.Payload[r.offset:int(math.Min(float64(r.offset+cap(b)-read), float64(len(r.Packet.Payload))))])
+		r.offset += rd
+		read += rd
 	}
-	return nil
+	return read, nil
 }
 
-func (r *Reader) readUntilPacket() error {
-	buffer := make([]byte, 64)
-	for len(r.remainder) < PacketSize {
-		b, err := r.reader.Read(buffer)
+func (r *Reader) readBytes(length int) ([]byte, error) {
+	buffer := make([]byte, length)
+	read := 0
+	for read < length {
+		b, err := r.reader.Read(buffer[read:])
 		if err != nil {
-			return err
+			return nil, err
 		}
-		if b == 0 {
-			return fmt.Errorf("Failed to read full packet got %d out of %d bytes", len(r.remainder), PacketSize)
-		}
-		r.remainder = append(r.remainder, buffer[:b]...)
+		read += b
 	}
-	return nil
+	return buffer, nil
 }
