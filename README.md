@@ -1,4 +1,4 @@
-GoTS ![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg) [![Build Status](https://travis-ci.org/damienlevin/gots.svg?branch=master)](https://travis-ci.org/damienlevin/gots) [![codebeat badge](https://codebeat.co/badges/c63c07d0-e4ff-45b9-9283-9861f6d9c720)](https://codebeat.co/projects/github-com-damienlevin-gots)
+GoTS [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/damienlevin/gots/blob/master/LICENSE) [![Build Status](https://travis-ci.org/damienlevin/gots.svg?branch=master)](https://travis-ci.org/damienlevin/gots) [![codebeat badge](https://codebeat.co/badges/c63c07d0-e4ff-45b9-9283-9861f6d9c720)](https://codebeat.co/projects/github-com-damienlevin-gots)
 ======
 [MPEG](https://en.wikipedia.org/wiki/MPEG_transport_stream) transport stream parser written in [Go](golang.org).
 
