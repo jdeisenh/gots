@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/damienlevin/gots/pes"
-	"github.com/damienlevin/gots/ts"
+	"github.com/jdeisenh/gots/pes"
+	"github.com/jdeisenh/gots/ts"
 	"io"
 	"net/http"
 	"os"

@@ -1,6 +1,6 @@
 package pes
 
-import "github.com/damienlevin/gots/ts"
+import "github.com/jdeisenh/gots/ts"
 
 type Reader struct {
 	reader *ts.Reader
