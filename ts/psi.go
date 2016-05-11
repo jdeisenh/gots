@@ -89,10 +89,12 @@ func newProgramMapTable(payload []byte) *ProgramMapTable {
 		PCRPID:                 uint16(data[8]&0x1F)<<8 | uint16(data[9]),
 		ProgramInfoLength:      uint16(data[10]&0x0F)<<8 | uint16(data[11])}
 
-    if (int(a.ProgramInfoLength) > 12) {
+    if int(a.ProgramInfoLength) > 12 {
 	    a.StreamDescriptors = newStreamDescriptors(data[12 : int(a.ProgramInfoLength)+12])
     }
-	a.ElementaryStreams = newElementaryStreams(data[int(a.ProgramInfoLength)+12 : int(a.SectionLenght)-1])
+    if  int(a.ProgramInfoLength)+12 < int(a.SectionLenght)-1 {
+	    a.ElementaryStreams = newElementaryStreams(data[int(a.ProgramInfoLength)+12 : int(a.SectionLenght)-1])
+    }
 	a.CRC32 = uint32(data[int(a.SectionLenght)-1])<<24 | uint32(data[int(a.SectionLenght)])<<16 |
 		uint32(data[int(a.SectionLenght)+1])<<8 | uint32(data[int(a.SectionLenght)+2])
 	return a
